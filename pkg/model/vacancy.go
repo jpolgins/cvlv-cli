@@ -81,10 +81,6 @@ func (p Period) String() string {
 	return fmt.Sprintf("%s - %s", p.PostedAt, p.ExpiresAt)
 }
 
-type VacancyRepository interface {
-	GetByCategory(category Category) []Vacancy
-}
-
 type vacancyJSON struct {
 	Position string
 	Salary   Salary
