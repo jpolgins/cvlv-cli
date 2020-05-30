@@ -2,11 +2,8 @@ DC ?= docker-compose
 DCE ?= docker-compose exec
 .DEFAULT_GOAL := help
 
-up: ## [Docker] Build, (re)create, and start application in docker.
-	$(DC) up -d && $(DCE) app go mod download
-
 run: ## [Docker] Run the app
-	$(DCE) app go run cmd/*.go
+	$(DC) up -d && $(DCE) app go mod download && $(DCE) app go run cmd/*.go
 
 ps: ## [Docker] List containers
 	$(DC) ps
@@ -14,19 +11,13 @@ ps: ## [Docker] List containers
 ssh: ## [Docker] SSH into app container
 	$(DCE) app sh
 
-stop: ## [Docker] Stop containers
-	$(DC) stop
-
-restart: ## [Docker] Restart containers
-	$(DC) restart
-
-rm: ## [Docker] Remove containers and its volumes
+clean: ## [Docker] Remove containers and its volumes
 	$(DC) down -v --remove-orphans
 
 redis-cli: ## [Redis] Redis CLI
 	$(DCE) redis redis-cli
 
-redis-clear: ## [Redis] Delete all the keys of all the existing databases
+redis-flush: ## [Redis] Delete all the keys of all the existing databases
 	$(DCE) redis redis-cli FLUSHALL ASYNC
 
 test: ## [Go] Run tests
