@@ -16,4 +16,3 @@ func (inMemory) Set(key string, val interface{}, duration time.Duration) {
 func (inMemory) Get(k string) (interface{}, bool) {
 	return nil, false
 }
-

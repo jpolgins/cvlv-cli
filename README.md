@@ -4,6 +4,6 @@
 
 ## Running the app ⚙️
 ```
-make up
 make run
 ```
+
