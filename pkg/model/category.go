@@ -22,10 +22,6 @@ func (c *Category) URI() string {
 	return c.uri
 }
 
-type CategoryRepository interface {
-	GetAll() []Category
-}
-
 type categoryJSON struct {
 	Title string
 	URI   string

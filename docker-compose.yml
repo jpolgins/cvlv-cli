@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: golang:alpine
+    image: golang:stretch
     working_dir: /go/src/cvlv
     ports:
       - 32971:4000
@@ -10,6 +10,8 @@ services:
       - .:/go/src/cvlv
     links:
       - redis
+    env_file:
+      - .env
     command: tail -f /dev/null
 
   redis:

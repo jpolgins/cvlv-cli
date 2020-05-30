@@ -62,11 +62,15 @@ type Salary struct {
 
 func (s Salary) String() string {
 	if s.From == "" && s.To == "" {
-		return "???"
+		return "n/a"
+	}
+
+	if s.From == "" {
+		s.From = "n/a"
 	}
 
 	if s.To == "" {
-		return s.From
+		s.To = "n/a"
 	}
 
 	return fmt.Sprintf("%s - %s", s.From, s.To)
@@ -78,11 +82,19 @@ type Period struct {
 }
 
 func (p Period) String() string {
-	return fmt.Sprintf("%s - %s", p.PostedAt, p.ExpiresAt)
-}
+	if p.PostedAt == "" && p.ExpiresAt == "" {
+		return "n/a"
+	}
 
-type VacancyRepository interface {
-	GetByCategory(category Category) []Vacancy
+	if p.PostedAt == "" {
+		p.PostedAt = "n/a"
+	}
+
+	if p.ExpiresAt == "" {
+		p.ExpiresAt = "n/a"
+	}
+
+	return fmt.Sprintf("%s - %s", p.PostedAt, p.ExpiresAt)
 }
 
 type vacancyJSON struct {
@@ -101,9 +113,11 @@ func (v *Vacancy) MarshalJSON() ([]byte, error) {
 		Location: v.location,
 		Period:   v.period,
 	})
+
 	if err != nil {
 		return nil, err
 	}
+
 	return j, nil
 }
 
