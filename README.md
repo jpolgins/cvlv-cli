@@ -1,10 +1,12 @@
-# cvlv-cli ![Build](https://github.com/jpolgins/cvlv-cli/workflows/Build/badge.svg)
- 
-[WIP 🛠] 🗃 Terminal application for browsing https://www.cv.lv
+# cvlv-cli
+![Build](https://github.com/jpolgins/cvlv-cli/workflows/Build/badge.svg)
+![Report](https://goreportcard.com/badge/github.com/jpolgins/cvlv-cli)
 
-![Gif](/docs/resources/cvlv-cli.gif)
+The missing command line interface for  https://www.cv.lv
 
-## Running the app ⚙️
+![Gif](/docs/resources/showcase.gif)
+
+#### Running the app ⚙️
 ```
 make run
 ```

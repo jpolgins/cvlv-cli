@@ -119,7 +119,6 @@ func (s *Scrapper) FetchCategories() ([]model.Category, error) {
 }
 
 func parseSalary(str string) model.Salary {
-	fmt.Println(str)
 	salary := model.Salary{}
 	re := regexp.MustCompile(`(?m)(?:[^\d,]|^)(\d+(?:(?:,\d+)*,\d{3})?\.\d{2,3})\b`)
 
