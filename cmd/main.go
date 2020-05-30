@@ -22,16 +22,19 @@ func main() {
 		DB:       opts.Redis.DB,
 	})
 
-	cvlv := scrapper.NewScrapper(cache.NewRedisCache(redisClient))
-	categories := cvlv.FetchCategories()
+	cvlv := scrapper.NewScrapper(scrapper.Options{
+		Cache: cache.NewRedisCache(redisClient),
+	})
 
-	// Add suggestions to CLI completer.
+	categories, err := cvlv.FetchCategories()
+	if err != nil {
+		panic(err)
+	}
+
 	completer := func(d prompt.Document) []prompt.Suggest {
 		suggestions := make([]prompt.Suggest, 0, 1)
-
 		for _, category := range categories {
-			suggestion := prompt.Suggest{Text: category.Title()}
-			suggestions = append(suggestions, suggestion)
+			suggestions = append(suggestions, prompt.Suggest{Text: category.Title()})
 		}
 
 		return prompt.FilterHasPrefix(suggestions, d.GetWordBeforeCursor(), true)
@@ -39,14 +42,14 @@ func main() {
 
 	for {
 		input := prompt.Input("> ", completer)
-
 		if input == "exit" || input == "q" || input == "q!" {
 			os.Exit(0)
 		}
 
 		for _, category := range categories {
 			if category.Title() == input {
-				ui.Print(cvlv.FetchVacanciesBy(category))
+				vacancies, _ := cvlv.FetchVacanciesBy(category)
+				ui.Print(vacancies)
 			}
 		}
 	}

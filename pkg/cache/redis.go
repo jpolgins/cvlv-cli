@@ -30,4 +30,3 @@ func (r redisCache) Get(k string) (interface{}, bool) {
 
 	return res, true
 }
-

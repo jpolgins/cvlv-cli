@@ -29,10 +29,10 @@ redis-cli: ## [Redis] Redis CLI
 redis-clear: ## [Redis] Delete all the keys of all the existing databases
 	$(DCE) redis redis-cli FLUSHALL ASYNC
 
-fmt: ## [Go] Run go fmt
-	$(DCE) app gofmt -s
+test: ## [Go] Run tests
+	$(DCE) app go test ./...
 
 help: ## Display this help message
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*## *" | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: up run ps ssh resart rm check redis-clear redis-clear help
+.PHONY: ssh test help

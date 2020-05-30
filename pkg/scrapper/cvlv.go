@@ -10,12 +10,16 @@ import (
 	"strings"
 )
 
+type Options struct {
+	Cache cache.Cache
+}
+
 type Scrapper struct {
 	crawler *colly.Collector
 	cache   cache.Cache
 }
 
-func NewScrapper(cache cache.Cache) *Scrapper {
+func NewScrapper(opts Options) *Scrapper {
 	collector := colly.NewCollector(
 		colly.AllowedDomains("www.cv.lv"),
 		colly.AllowURLRevisit(),
@@ -33,13 +37,17 @@ func NewScrapper(cache cache.Cache) *Scrapper {
 		fmt.Println("error:", e, r.Request.URL, string(r.Body))
 	})
 
+	if opts.Cache == nil {
+		opts.Cache = cache.NewNoCache()
+	}
+
 	return &Scrapper{
 		crawler: collector,
-		cache:   cache,
+		cache:   opts.Cache,
 	}
 }
 
-func (s *Scrapper) FetchVacanciesBy(category model.Category) []model.Vacancy {
+func (s *Scrapper) FetchVacanciesBy(category model.Category) ([]model.Vacancy, error) {
 	var vacancies []model.Vacancy
 	fromCache, has := s.cache.Get(category.URI())
 
@@ -60,29 +68,30 @@ func (s *Scrapper) FetchVacanciesBy(category model.Category) []model.Vacancy {
 
 		s.crawler.OnHTML(".page_next a[href]", func(e *colly.HTMLElement) {
 			if err := e.Request.Visit(e.Attr("href")); err != nil {
-				panic(err)
+				return
 			}
 		})
 
 		if err := s.crawler.Visit(fmt.Sprintf("https://www.cv.lv/job-ads/%s", category.URI())); err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		serialized, _ := json.Marshal(vacancies)
 		s.cache.Set(category.URI(), serialized, 0)
 
-		return vacancies
+		return vacancies, nil
 	}
 
 	if err := json.Unmarshal([]byte(fmt.Sprintf("%v", fromCache)), &vacancies); err != nil {
-		panic(err) // TODO: return error
+		return nil, err
 	}
 
-	return vacancies
+	return vacancies, nil
 }
 
-func (s *Scrapper) FetchCategories() []model.Category {
+func (s *Scrapper) FetchCategories() ([]model.Category, error) {
 	var categories []model.Category
+
 	fromCache, has := s.cache.Get("categories")
 
 	if !has {
@@ -93,23 +102,24 @@ func (s *Scrapper) FetchCategories() []model.Category {
 		})
 
 		if err := s.crawler.Visit("https://www.cv.lv/english"); err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		serialized, _ := json.Marshal(categories)
 		s.cache.Set("categories", serialized, 0)
 
-		return categories
+		return categories, nil
 	}
 
 	if err := json.Unmarshal([]byte(fmt.Sprintf("%v", fromCache)), &categories); err != nil {
-		panic(err) // TODO: return error
+		return nil, err
 	}
 
-	return categories
+	return categories, nil
 }
 
 func parseSalary(str string) model.Salary {
+	fmt.Println(str)
 	salary := model.Salary{}
 	re := regexp.MustCompile(`(?m)(?:[^\d,]|^)(\d+(?:(?:,\d+)*,\d{3})?\.\d{2,3})\b`)
 
