@@ -1,3 +1,4 @@
+!NOTE Not working due to the current changes on www.cv.lv front-end
 # cvlv-cli
 ![Build](https://github.com/jpolgins/cvlv-cli/workflows/Build/badge.svg)
 ![Report](https://goreportcard.com/badge/github.com/jpolgins/cvlv-cli)
